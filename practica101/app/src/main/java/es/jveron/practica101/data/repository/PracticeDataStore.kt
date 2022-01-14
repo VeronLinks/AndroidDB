@@ -5,6 +5,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import es.jveron.practica101.data.repository.PreferencesKeys.PRACTICE_NAME_KEY
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 private const val PRACTICE_DATA_STORE = "practice_data_store"
 

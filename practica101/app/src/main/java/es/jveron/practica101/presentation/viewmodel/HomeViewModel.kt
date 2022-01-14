@@ -11,6 +11,7 @@ import es.jveron.practica101.presentation.view.HomeState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
@@ -25,8 +26,9 @@ class HomeViewModel(
     fun getData() {
         viewModelScope.launch {
             //delay(3000) //Simulating network request
-            val practiceData = getPracticeData.getPracticeData()
-            practiceMutableStateFlow.emit(HomeState.Success(practiceData))
+            getPracticeData.getPracticeData().collect { practiceData ->
+                practiceMutableStateFlow.emit(HomeState.Success(practiceData))
+            }
         }
     }
 
