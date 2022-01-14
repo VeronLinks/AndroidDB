@@ -31,14 +31,20 @@ class HomeViewModel(
     }
 
     fun addData(practiceData: PracticeData) {
-        addPracticeData.addPracticeData(practiceData)
+        viewModelScope.launch {
+            addPracticeData.addPracticeData(practiceData)
+        }
     }
 
     fun updateData(practiceData: PracticeData) {
-        updatePracticeData.updatePracticeData(practiceData)
+        viewModelScope.launch {
+            updatePracticeData.updatePracticeData(practiceData)
+        }
     }
 
     fun deleteData() {
-        deletePracticeData.deletePracticeData()
+        viewModelScope.launch {
+            deletePracticeData.deletePracticeData()
+        }
     }
 }
