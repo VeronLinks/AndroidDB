@@ -1,8 +1,10 @@
 package es.jveron.cities.presentation.view
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -86,7 +88,45 @@ class HomeFragment : Fragment() {
                 setState(cityState)
             }
         }
+
         homeViewModel.getData()
+
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+            homeViewModel.filterCityState.collect { filter ->
+                setFilter(filter)
+            }
+        }
+
+        homeViewModel.getFilter()
+    }
+
+    private fun setFilter(filter: CityFilter) {
+        val allCities : MenuItem = binding.citiesToolbar.menu.findItem(R.id.action_all_cities)
+        val sunnyCities : MenuItem = binding.citiesToolbar.menu.findItem(R.id.action_sunny_cities)
+        val cloudyCities : MenuItem = binding.citiesToolbar.menu.findItem(R.id.action_cloudy_cities)
+
+        reset(allCities, sunnyCities, cloudyCities)
+        when (filter) {
+            CityFilter.ALL_CITIES -> {
+                setSelected(allCities)
+            }
+            CityFilter.SUNNY_CITIES -> {
+                setSelected(sunnyCities)
+            }
+            CityFilter.CLOUDY_CITIES -> {
+                setSelected(cloudyCities)
+            }
+        }
+    }
+
+    private fun setSelected(menuItem: MenuItem) {
+        menuItem.icon.setTint(Color.YELLOW)
+    }
+
+    private fun reset(vararg menuItems: MenuItem) {
+        menuItems.forEach {
+            it.icon.setTint(Color.WHITE)
+        }
     }
 
     private fun setState(cityState: CityState) {

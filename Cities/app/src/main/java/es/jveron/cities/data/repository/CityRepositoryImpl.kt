@@ -1,6 +1,7 @@
 package es.jveron.cities.data.repository
 
 import android.content.Context
+import android.content.SharedPreferences
 import es.jveron.cities.domain.model.City
 import es.jveron.cities.domain.model.CityFilter
 import es.jveron.cities.domain.repository.CityRepository
@@ -8,7 +9,7 @@ import es.jveron.cities.domain.repository.CityRepository
 const val CITIES_PREFERENCES = "Cities_Preferences"
 const val CITY_FILTER_KEY = "CityFilterKey"
 
-class CityRepositoryImpl(private val context: Context): CityRepository {
+class CityRepositoryImpl(private val sharedPreferences: SharedPreferences): CityRepository {
 
     private val cities = getFakeData()
 
@@ -23,8 +24,13 @@ class CityRepositoryImpl(private val context: Context): CityRepository {
     }
 
     override fun setFilter(cityFilter: CityFilter) {
-        val sharedPreferences = context.getSharedPreferences(CITIES_PREFERENCES, Context.MODE_PRIVATE)
         sharedPreferences.edit().putString(CITY_FILTER_KEY, cityFilter.name).apply()
+    }
+
+    override fun getCityFilter(): CityFilter {
+        return CityFilter.valueOf(
+            sharedPreferences.getString(CITY_FILTER_KEY, CityFilter.ALL_CITIES.name) ?:
+                CityFilter.ALL_CITIES.name)
     }
 
     private fun getFakeData(): MutableList<City> {

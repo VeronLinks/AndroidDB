@@ -11,4 +11,6 @@ interface CityRepository {
 
     fun setFilter(cityFilter: CityFilter)
 
+    fun getCityFilter(): CityFilter
+
 }
