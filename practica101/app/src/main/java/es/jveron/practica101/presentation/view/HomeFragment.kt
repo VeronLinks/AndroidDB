@@ -10,16 +10,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import es.jveron.practica101.databinding.FragmentHomeBinding
+import es.jveron.practica101.domain.PracticeData
 import es.jveron.practica101.presentation.viewmodel.HomeViewModel
 import es.jveron.practica101.presentation.viewmodel.HomeViewModelFactory
 import kotlinx.coroutines.flow.collect
 
 class HomeFragment : Fragment() {
     private val viewModel: HomeViewModel by viewModels {
-        HomeViewModelFactory()
+        HomeViewModelFactory(requireContext())
     }
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,6 +38,19 @@ class HomeFragment : Fragment() {
             }
         }
         viewModel.getData()
+
+         binding.addDataButton.setOnClickListener {
+             viewModel.addData(PracticeData(binding.editText.text.toString()))
+             viewModel.getData()
+         }
+        binding.updateDataButton.setOnClickListener {
+            viewModel.updateData(PracticeData(binding.editText.text.toString()))
+            viewModel.getData()
+        }
+        binding.deleteDataButton.setOnClickListener {
+            viewModel.deleteData()
+            viewModel.getData()
+        }
     }
 
     private fun setState(homeState: HomeState) {

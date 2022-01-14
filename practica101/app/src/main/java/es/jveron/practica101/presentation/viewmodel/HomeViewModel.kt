@@ -24,7 +24,7 @@ class HomeViewModel(
     val practiceStateFlow: StateFlow<HomeState> = practiceMutableStateFlow
     fun getData() {
         viewModelScope.launch {
-            delay(3000) //Simulating network request
+            //delay(3000) //Simulating network request
             val practiceData = getPracticeData.getPracticeData()
             practiceMutableStateFlow.emit(HomeState.Success(practiceData))
         }
