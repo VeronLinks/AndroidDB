@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import es.jveron.cities.R
 import es.jveron.cities.databinding.FragmentHomeBinding
 import es.jveron.cities.domain.model.City
+import es.jveron.cities.domain.model.CityFilter
 import es.jveron.cities.presentation.viewmodel.CityState
 import es.jveron.cities.presentation.viewmodel.HomeViewModel
 import es.jveron.cities.presentation.viewmodel.HomeViewModelFactory
@@ -25,7 +26,7 @@ class HomeFragment : Fragment() {
     val binding: FragmentHomeBinding get() = _binding!!
 
     val homeViewModel : HomeViewModel by viewModels {
-        HomeViewModelFactory()
+        HomeViewModelFactory(requireContext())
     }
 
     val citiesAdapter = CitiesAdapter()
@@ -45,6 +46,26 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.citiesToolbar.inflateMenu(R.menu.cities_menu)
+        binding.citiesToolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_all_cities -> {
+                    homeViewModel.setFilter(CityFilter.ALL_CITIES)
+                    true
+                }
+                R.id.action_sunny_cities -> {
+                    homeViewModel.setFilter(CityFilter.SUNNY_CITIES)
+                    true
+                }
+                R.id.action_cloudy_cities -> {
+                    homeViewModel.setFilter(CityFilter.CLOUDY_CITIES)
+                    true
+                }
+                else -> false
+            }
+
+        }
 
         childFragmentManager.setFragmentResultListener(ADD_CITY_REQUEST_KEY, viewLifecycleOwner) { _, bundle ->
             val city : City? = bundle.getParcelable(CITY_KEY) as? City

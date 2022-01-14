@@ -3,8 +3,10 @@ package es.jveron.cities.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.jveron.cities.domain.model.City
+import es.jveron.cities.domain.model.CityFilter
 import es.jveron.cities.domain.usecases.AddCityUseCase
 import es.jveron.cities.domain.usecases.GetCitiesUseCase
+import es.jveron.cities.domain.usecases.SetFilterUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +14,8 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel (
     private val addCityUseCase: AddCityUseCase,
-    private val getCitiesUseCase: GetCitiesUseCase
+    private val getCitiesUseCase: GetCitiesUseCase,
+    private val setFilterUseCase: SetFilterUseCase
     ) : ViewModel() {
 
     private val citiesMutableStateFlow = MutableStateFlow<CityState>(CityState.Loading)
@@ -31,6 +34,10 @@ class HomeViewModel (
     fun addCity(city: City?) {
         addCityUseCase.addCity(city!!)
         getData()
+    }
+
+    fun setFilter(cityFilter: CityFilter){
+        setFilterUseCase.setFilter(cityFilter)
     }
 
 }
