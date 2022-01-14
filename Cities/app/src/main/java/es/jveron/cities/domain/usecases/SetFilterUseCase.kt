@@ -5,7 +5,7 @@ import es.jveron.cities.domain.repository.CityRepository
 
 class SetFilterUseCase(private val cityRepository: CityRepository) {
 
-    fun setFilter(cityFilter: CityFilter){
-        cityRepository.setFilter(cityFilter)
+    suspend fun setFilter(cityFilter: CityFilter){
+        cityRepository.setCityFilter(cityFilter)
     }
 }

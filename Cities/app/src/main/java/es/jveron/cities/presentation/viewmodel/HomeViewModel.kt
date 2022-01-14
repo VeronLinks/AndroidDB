@@ -11,6 +11,7 @@ import es.jveron.cities.domain.usecases.SetFilterUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class HomeViewModel (
@@ -41,15 +42,18 @@ class HomeViewModel (
     }
 
     fun setFilter(cityFilter: CityFilter){
-        setFilterUseCase.setFilter(cityFilter)
-        getData()
-        getFilter()
+        viewModelScope.launch {
+            setFilterUseCase.setFilter(cityFilter)
+            getData()
+            getFilter()
+        }
     }
 
     fun getFilter() {
         viewModelScope.launch {
-            val filter = getFilterUseCase.getFilter()
-            filterCityMutableStateFlow.emit(filter)
+            getFilterUseCase.getFilter().collect { filter ->
+                filterCityMutableStateFlow.emit(filter)
+            }
         }
     }
 

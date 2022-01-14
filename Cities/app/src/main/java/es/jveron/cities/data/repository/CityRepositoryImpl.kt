@@ -2,14 +2,34 @@ package es.jveron.cities.data.repository
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import es.jveron.cities.data.repository.CityFilterKey.cityFilterKey
 import es.jveron.cities.domain.model.City
 import es.jveron.cities.domain.model.CityFilter
 import es.jveron.cities.domain.repository.CityRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 const val CITIES_PREFERENCES = "Cities_Preferences"
 const val CITY_FILTER_KEY = "CityFilterKey"
 
-class CityRepositoryImpl(private val sharedPreferences: SharedPreferences): CityRepository {
+const val CITIES_DATA_STORE = "CITIES_DATA_STORAGE"
+
+val Context.dataStore by preferencesDataStore(
+    name = CITIES_DATA_STORE
+)
+
+object CityFilterKey {
+    val cityFilterKey = stringPreferencesKey(CITY_FILTER_KEY)
+}
+
+class CityRepositoryImpl(private val dataStore: DataStore<Preferences>): CityRepository {
 
     private val cities = getFakeData()
 
@@ -23,14 +43,17 @@ class CityRepositoryImpl(private val sharedPreferences: SharedPreferences): City
         cities.add(city!!)
     }
 
-    override fun setFilter(cityFilter: CityFilter) {
-        sharedPreferences.edit().putString(CITY_FILTER_KEY, cityFilter.name).apply()
+    override suspend fun setCityFilter(cityFilter: CityFilter) {
+        dataStore.edit { preferences ->
+            preferences[cityFilterKey] = cityFilter.name
+        }
     }
 
-    override fun getCityFilter(): CityFilter {
-        return CityFilter.valueOf(
-            sharedPreferences.getString(CITY_FILTER_KEY, CityFilter.ALL_CITIES.name) ?:
-                CityFilter.ALL_CITIES.name)
+    override suspend fun getCityFilter(): Flow<CityFilter> {
+        return dataStore.data.map { preferences ->
+            val filter = preferences[cityFilterKey] ?: CityFilter.ALL_CITIES.name
+            CityFilter.valueOf(filter)
+        }
     }
 
     private fun getFakeData(): MutableList<City> {

@@ -2,6 +2,7 @@ package es.jveron.cities.domain.repository
 
 import es.jveron.cities.domain.model.City
 import es.jveron.cities.domain.model.CityFilter
+import kotlinx.coroutines.flow.Flow
 
 interface CityRepository {
 
@@ -9,8 +10,8 @@ interface CityRepository {
 
     fun addCity(city: City)
 
-    fun setFilter(cityFilter: CityFilter)
+    suspend fun setCityFilter(cityFilter: CityFilter)
 
-    fun getCityFilter(): CityFilter
+    suspend fun getCityFilter(): Flow<CityFilter>
 
 }
