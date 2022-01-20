@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface CityRepository {
 
-    suspend fun getCities(): List<City>
+    suspend fun getCities(): Flow<List<City>>
 
-    fun addCity(city: City)
+    suspend fun addCity(city: City)
 
     suspend fun setCityFilter(cityFilter: CityFilter)
 

@@ -13,45 +13,49 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
-class HomeViewModel (
-    private val addCityUseCase: AddCityUseCase,
-    private val getCitiesUseCase: GetCitiesUseCase,
-    private val setFilterUseCase: SetFilterUseCase,
-    private val getFilterUseCase: GetFilterUseCase
-    ) : ViewModel() {
+class HomeViewModel(
+    val addCityUseCase: AddCityUseCase,
+    val getCitiesUseCase: GetCitiesUseCase,
+    val setFilterUseCase: SetFilterUseCase,
+    val getFilterUseCase: GetFilterUseCase
+): ViewModel() {
 
     private val citiesMutableStateFlow = MutableStateFlow<CityState>(CityState.Loading)
-    val citiesStateFlow : StateFlow<CityState> = citiesMutableStateFlow
+    val citiesStateFlow: StateFlow<CityState> = citiesMutableStateFlow
 
     private val filterCityMutableStateFlow = MutableStateFlow(CityFilter.ALL_CITIES)
-    val filterCityState : StateFlow<CityFilter> = filterCityMutableStateFlow
+    val filterCityState: StateFlow<CityFilter> = filterCityMutableStateFlow
 
-    fun getData() {
+    private val triggerFlow = MutableStateFlow(false)
 
-        viewModelScope.launch(Dispatchers.IO) {
-            val newCities = getCitiesUseCase.getCities()
-            citiesMutableStateFlow.emit(CityState.Success(newCities))
+    fun getData(){
+        viewModelScope.launch {
+            triggerFlow.flatMapLatest {
+                getCitiesUseCase.getCities()
+            }
+                .collect { cityList ->
+                    citiesMutableStateFlow.emit(CityState.Success(cityList))
+            }
         }
     }
 
-    fun addCity(city: City?) {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun addCity (city: City?) {
+        viewModelScope.launch {
             addCityUseCase.addCity(city!!)
-            getData()
         }
     }
 
-    fun setFilter(cityFilter: CityFilter){
+    fun setFilter (cityFilter: CityFilter){
         viewModelScope.launch {
             setFilterUseCase.setFilter(cityFilter)
-            getData()
-            getFilter()
+            triggerFlow.value = !triggerFlow.value
         }
     }
 
-    fun getFilter() {
+    fun getFilter () {
         viewModelScope.launch {
             getFilterUseCase.getFilter().collect { filter ->
                 filterCityMutableStateFlow.emit(filter)

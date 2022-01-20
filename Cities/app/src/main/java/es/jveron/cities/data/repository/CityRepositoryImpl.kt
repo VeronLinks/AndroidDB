@@ -14,6 +14,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import es.jveron.cities.data.repository.CityKey.cityFilterKey
 import es.jveron.cities.data.repository.CityKey.timestamp
 import es.jveron.cities.data.repository.api.CityService
+import es.jveron.cities.data.repository.room.CityDao
 import es.jveron.cities.data.repository.sqlite.CityContract.CityEntity.COLUMN_DESCRIPTION
 import es.jveron.cities.data.repository.sqlite.CityContract.CityEntity.COLUMN_NAME
 import es.jveron.cities.data.repository.sqlite.CityContract.CityEntity.COLUMN_SUNSHINE_HOURS
@@ -45,13 +46,15 @@ object CityKey{
 class CityRepositoryImpl(
     private val dataStore: DataStore<Preferences>,
     private val citySqliteHelper: CitySqliteHelper,
-    private val cityService: CityService): CityRepository {
+    private val cityService: CityService,
+    private val cityDao: CityDao
+): CityRepository {
 
     private val db = citySqliteHelper.writableDatabase
 
-    override suspend fun getCities(): List<City> {
+    override suspend fun getCities(): Flow<List<City>> {
 
-        if (shouldRefresh()) {
+        if(shouldRefresh()){
             cityService.getCities().forEach { cityApiModel ->
                 val city = CityMapper.mapCityFromApiToDomain(cityApiModel)
                 addCity(city)
@@ -62,33 +65,18 @@ class CityRepositoryImpl(
             }
         }
 
-        val cities = mutableListOf<City>()
-
-        Log.d("CITY_REPOSITORY", Thread.currentThread().name)
-
-        val cursor = db.rawQuery("SELECT * FROM $TABLE_NAME", null)
-        with(cursor){
-            while (moveToNext()){
-                val id = getInt(getColumnIndexOrThrow(BaseColumns._ID))
-                val name = getString(getColumnIndexOrThrow(COLUMN_NAME))
-                val description = getString(getColumnIndexOrThrow(COLUMN_DESCRIPTION))
-                val sunshineHours = getInt(getColumnIndexOrThrow(COLUMN_SUNSHINE_HOURS))
-
-                cities.add(City(id, name, description, sunshineHours))
+        return cityDao.getCities().map { cityList ->
+            cityList.map { city ->
+                CityMapper.mapCityFromDbToDomain(city)
             }
-        }
 
-        return cities
+        }
     }
 
-    override fun addCity(city: City) {
-        val cityContentValues = ContentValues()
-        cityContentValues.put(BaseColumns._ID, city.id)
-        cityContentValues.put(COLUMN_NAME, city.name)
-        cityContentValues.put(COLUMN_DESCRIPTION, city.description)
-        cityContentValues.put(COLUMN_SUNSHINE_HOURS, city.sunshineHours)
+    override suspend fun addCity(city: City) {
+        val cityToAdd = CityMapper.mapCityFromDomainToDb(city)
+        cityDao.insertCity(cityToAdd)
 
-        db.insert(TABLE_NAME, null, cityContentValues)
     }
 
     override suspend fun setCityFilter(cityFilter: CityFilter) {
@@ -106,12 +94,13 @@ class CityRepositoryImpl(
         }
     }
 
-    private suspend fun shouldRefresh() : Boolean {
+    private suspend fun shouldRefresh(): Boolean{
         val timestamp = dataStore.data.map { preference ->
             preference[timestamp] ?: 0
         }.first()
 
         return System.currentTimeMillis() - timestamp > FIVE_DAYS
     }
+
 
 }

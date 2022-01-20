@@ -5,7 +5,7 @@ import es.jveron.cities.domain.repository.CityRepository
 
 class AddCityUseCase (val cityRepository: CityRepository) {
 
-    fun addCity(city: City) {
+    suspend fun addCity(city: City) {
         cityRepository.addCity(city)
     }
 }

@@ -17,7 +17,7 @@ object CityContract {
         val COLUMN_NAME = "name"
         val COLUMN_DESCRIPTION = "description"
         val COLUMN_SUNSHINE_HOURS = "sunshine_hours"
-        val TABLE_NAME = "cities"
+        const val TABLE_NAME = "cities"
     }
 }
 
