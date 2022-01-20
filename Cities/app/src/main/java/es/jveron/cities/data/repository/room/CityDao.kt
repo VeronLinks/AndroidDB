@@ -15,4 +15,10 @@ interface CityDao {
     @Query("SELECT * FROM $TABLE_NAME")
     fun getCities(): Flow<List<CityDbModel>>
 
+    @Insert
+    suspend fun insertSight(sightDbModel: SightDbModel)
+
+    @Query("SELECT * FROM $TABLE_NAME WHERE id = :cityId")
+    fun getCityAndSights(cityId: Int): List<CityAndSightsDbModel>
+
 }

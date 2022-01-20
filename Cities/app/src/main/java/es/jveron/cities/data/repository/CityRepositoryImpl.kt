@@ -21,7 +21,9 @@ import es.jveron.cities.data.repository.sqlite.CityContract.CityEntity.COLUMN_SU
 import es.jveron.cities.data.repository.sqlite.CityContract.CityEntity.TABLE_NAME
 import es.jveron.cities.data.repository.sqlite.CitySqliteHelper
 import es.jveron.cities.domain.model.City
+import es.jveron.cities.domain.model.CityAndSights
 import es.jveron.cities.domain.model.CityFilter
+import es.jveron.cities.domain.model.Sight
 import es.jveron.cities.domain.repository.CityRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -45,12 +47,10 @@ object CityKey{
 
 class CityRepositoryImpl(
     private val dataStore: DataStore<Preferences>,
-    private val citySqliteHelper: CitySqliteHelper,
     private val cityService: CityService,
     private val cityDao: CityDao
 ): CityRepository {
 
-    private val db = citySqliteHelper.writableDatabase
 
     override suspend fun getCities(): Flow<List<City>> {
 
@@ -58,6 +58,11 @@ class CityRepositoryImpl(
             cityService.getCities().forEach { cityApiModel ->
                 val city = CityMapper.mapCityFromApiToDomain(cityApiModel)
                 addCity(city)
+
+                cityApiModel.sights.forEach(){
+                    val sight = SightMapper.mapSightFromApiToDomain(it)
+                    addSight(sight)
+                }
             }
 
             dataStore.edit { mutablePreferences ->
@@ -69,7 +74,6 @@ class CityRepositoryImpl(
             cityList.map { city ->
                 CityMapper.mapCityFromDbToDomain(city)
             }
-
         }
     }
 
@@ -92,6 +96,21 @@ class CityRepositoryImpl(
             val filter = preferences[cityFilterKey] ?: CityFilter.ALL_CITIES.name
             CityFilter.valueOf(filter)
         }
+    }
+
+    override suspend fun getCityAndSights(cityId: Int): List<CityAndSights> {
+        return cityDao.getCityAndSights(cityId).map { cityAndSights ->
+            val city = CityMapper.mapCityFromDbToDomain(cityAndSights.city)
+            val sights = cityAndSights.sights.map { sight ->
+                SightMapper.mapSightFromDbToDomain(sight)
+            }
+            CityAndSights(city, sights)
+        }
+    }
+
+    override suspend fun addSight(sight: Sight) {
+        val sightToAdd = SightMapper.mapSightFromDomainToDb(sight)
+        cityDao.insertSight(sightToAdd)
     }
 
     private suspend fun shouldRefresh(): Boolean{

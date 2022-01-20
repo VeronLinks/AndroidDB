@@ -17,9 +17,8 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 class HomeViewModelFactory (private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        val sqliteHelper = CitySqliteHelper(context)
         val cityDao = CityDatabase.getDatabase(context).getDao()
-        val repository = CityRepositoryImpl(context.dataStore, sqliteHelper, createService(), cityDao)
+        val repository = CityRepositoryImpl(context.dataStore, createService(), cityDao)
         val addCityUseCase = AddCityUseCase(repository)
         val getCitiesUseCase = GetCitiesUseCase(repository)
         val setFilterUseCase = SetFilterUseCase(repository)
