@@ -20,4 +20,12 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (supportFragmentManager.backStackEntryCount == 0)
+        {
+            finish()
+        }
+    }
 }

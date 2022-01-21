@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import es.jveron.cities.R
 import es.jveron.cities.databinding.FragmentCityAndSightsBinding
+import es.jveron.cities.domain.model.CityFilter
 import es.jveron.cities.presentation.viewmodel.*
 import kotlinx.coroutines.flow.collect
 
@@ -42,6 +43,17 @@ class CityAndSightsFragment(val cityId: Int) : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.sightsToolbar.inflateMenu(R.menu.sights_menu)
+        binding.sightsToolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_back -> {
+                    parentFragmentManager.popBackStack()
+                    true
+                }
+                else -> false
+            }
+        }
 
         binding.cityAndSightsRecyclerView.apply {
             adapter = sightsAdapter

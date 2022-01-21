@@ -10,4 +10,5 @@
     <string name="cloudy_cities">Cloudy</string>
     <string name="sunny_cities">Sunny</string>
     <string name="sunshineHours">Horas de sol</string>
+    <string name="back">Go back</string>
 </resources>
