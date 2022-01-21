@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import es.jveron.cities.data.repository.CityRepositoryImpl
 import es.jveron.cities.data.repository.api.CityService
 import es.jveron.cities.data.repository.dataStore
+import es.jveron.cities.data.repository.firebase.CityFirebaseRepositoryImpl
 import es.jveron.cities.data.repository.room.CityDatabase
 import es.jveron.cities.data.repository.sqlite.CitySqliteHelper
 import es.jveron.cities.domain.usecases.AddCityUseCase
@@ -17,12 +18,13 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 class HomeViewModelFactory (private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        val cityDao = CityDatabase.getDatabase(context).getDao()
-        val repository = CityRepositoryImpl(context.dataStore, createService(), cityDao)
-        val addCityUseCase = AddCityUseCase(repository)
-        val getCitiesUseCase = GetCitiesUseCase(repository)
-        val setFilterUseCase = SetFilterUseCase(repository)
-        val getFilterUseCase = GetFilterUseCase(repository)
+        //val cityDao = CityDatabase.getDatabase(context).getDao()
+        //val repository = CityRepositoryImpl(context.dataStore, createService(), cityDao)
+        val firebaseRepository = CityFirebaseRepositoryImpl()
+        val addCityUseCase = AddCityUseCase(firebaseRepository)
+        val getCitiesUseCase = GetCitiesUseCase(firebaseRepository)
+        val setFilterUseCase = SetFilterUseCase(firebaseRepository)
+        val getFilterUseCase = GetFilterUseCase(firebaseRepository)
         return HomeViewModel(addCityUseCase, getCitiesUseCase, setFilterUseCase, getFilterUseCase) as T
     }
 

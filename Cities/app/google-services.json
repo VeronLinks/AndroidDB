@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "882554378875",
+    "project_id": "cities-f2e29",
+    "storage_bucket": "cities-f2e29.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:882554378875:android:06d20be389d844d14d60de",
+        "android_client_info": {
+          "package_name": "es.jveron.cities"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "882554378875-7gc0d7t2n00lkrbkinsbq0vlntho1m0e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATNmRIYX8ePtpL_M1CFMs1dTaK5Zm5SwU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "882554378875-7gc0d7t2n00lkrbkinsbq0vlntho1m0e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

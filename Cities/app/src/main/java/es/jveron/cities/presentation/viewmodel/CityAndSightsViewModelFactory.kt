@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import es.jveron.cities.data.repository.CityRepositoryImpl
 import es.jveron.cities.data.repository.api.CityService
 import es.jveron.cities.data.repository.dataStore
+import es.jveron.cities.data.repository.firebase.CityFirebaseRepositoryImpl
 import es.jveron.cities.data.repository.room.CityDatabase
 import es.jveron.cities.domain.usecases.*
 import retrofit2.Retrofit
@@ -13,9 +14,10 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 class CityAndSightsViewModelFactory (private val context: Context, private val cityId: Int) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        val cityDao = CityDatabase.getDatabase(context).getDao()
-        val repository = CityRepositoryImpl(context.dataStore, createService(), cityDao)
-        val getCityAndSightsUseCase = GetCityAndSightsUseCase(repository)
+        //val cityDao = CityDatabase.getDatabase(context).getDao()
+        //val repository = CityRepositoryImpl(context.dataStore, createService(), cityDao)
+        val firebaseRepository = CityFirebaseRepositoryImpl()
+        val getCityAndSightsUseCase = GetCityAndSightsUseCase(firebaseRepository)
         return CityAndSightsViewModel(cityId, getCityAndSightsUseCase) as T
     }
 
