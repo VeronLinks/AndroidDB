@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import es.jveron.cities.databinding.CityItemBinding
 import es.jveron.cities.domain.model.City
 
-class CitiesAdapter : ListAdapter<City, CitiesAdapter.CityViewHolder>(CitiesDiffUtilCallback) {
+class CitiesAdapter (val onClickCityListener: OnClickCityListener) : ListAdapter<City, CitiesAdapter.CityViewHolder>(CitiesDiffUtilCallback) {
 
     inner class CityViewHolder(val binding: CityItemBinding): RecyclerView.ViewHolder(binding.root)
 
@@ -21,6 +21,7 @@ class CitiesAdapter : ListAdapter<City, CitiesAdapter.CityViewHolder>(CitiesDiff
         val city = getItem(position)
         holder.binding.cityName.text = city.name
         holder.binding.cityDescription.text = city.description
+        holder.binding.root.setOnClickListener{ onClickCityListener.onCityClicked(city.id) }
     }
 }
 
@@ -32,4 +33,8 @@ object CitiesDiffUtilCallback : DiffUtil.ItemCallback<City>() {
     override fun areContentsTheSame(oldItem: City, newItem: City): Boolean {
         return oldItem.id == newItem.id
     }
+}
+
+interface OnClickCityListener{
+    fun onCityClicked(cityId: Int)
 }

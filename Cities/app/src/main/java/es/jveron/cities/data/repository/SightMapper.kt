@@ -17,7 +17,7 @@ object SightMapper {
     fun mapSightFromDbToDomain(sightDbModel: SightDbModel): Sight {
         return Sight(
             sightDbModel.id,
-            sightDbModel.cityId,
+            sightDbModel.city_id,
             sightDbModel.name,
             sightDbModel.description
         )
@@ -26,7 +26,7 @@ object SightMapper {
     fun mapSightFromDomainToDb (sight: Sight): SightDbModel {
         return SightDbModel(
             id = sight.id,
-            cityId = sight.cityId,
+            city_id = sight.cityId,
             name = sight.name,
             description = sight.description
         )

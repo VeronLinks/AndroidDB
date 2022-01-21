@@ -98,14 +98,13 @@ class CityRepositoryImpl(
         }
     }
 
-    override suspend fun getCityAndSights(cityId: Int): List<CityAndSights> {
-        return cityDao.getCityAndSights(cityId).map { cityAndSights ->
-            val city = CityMapper.mapCityFromDbToDomain(cityAndSights.city)
-            val sights = cityAndSights.sights.map { sight ->
-                SightMapper.mapSightFromDbToDomain(sight)
-            }
-            CityAndSights(city, sights)
+    override suspend fun getCityAndSights(cityId: Int): CityAndSights {
+        val cityAndSights = cityDao.getCityAndSights(cityId)
+        val city = CityMapper.mapCityFromDbToDomain(cityAndSights.city)
+        val sights = cityAndSights.sights.map { sight ->
+            SightMapper.mapSightFromDbToDomain(sight)
         }
+        return CityAndSights(city, sights)
     }
 
     override suspend fun addSight(sight: Sight) {

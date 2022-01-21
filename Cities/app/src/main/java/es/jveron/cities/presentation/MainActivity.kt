@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager
                 .beginTransaction()
                 .add(R.id.fragmentContainerView, HomeFragment.newInstance())
+                .addToBackStack(null)
                 .commit()
         }
     }

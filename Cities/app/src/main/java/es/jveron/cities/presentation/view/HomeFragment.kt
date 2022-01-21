@@ -22,7 +22,7 @@ import es.jveron.cities.presentation.viewmodel.HomeViewModel
 import es.jveron.cities.presentation.viewmodel.HomeViewModelFactory
 import kotlinx.coroutines.flow.collect
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), OnClickCityListener {
 
     var _binding: FragmentHomeBinding? = null
     val binding: FragmentHomeBinding get() = _binding!!
@@ -31,7 +31,7 @@ class HomeFragment : Fragment() {
         HomeViewModelFactory(requireContext())
     }
 
-    val citiesAdapter = CitiesAdapter()
+    val citiesAdapter = CitiesAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +66,6 @@ class HomeFragment : Fragment() {
                 }
                 else -> false
             }
-
         }
 
         childFragmentManager.setFragmentResultListener(ADD_CITY_REQUEST_KEY, viewLifecycleOwner) { _, bundle ->
@@ -146,5 +145,12 @@ class HomeFragment : Fragment() {
 
     companion object {
         fun newInstance() = HomeFragment()
+    }
+
+    override fun onCityClicked(cityId: Int) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView, CityAndSightsFragment.newInstance(cityId))
+            .addToBackStack(null)
+            .commit()
     }
 }

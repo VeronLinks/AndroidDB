@@ -7,6 +7,6 @@ import androidx.room.PrimaryKey
 data class SightDbModel (
     @PrimaryKey
     val id: Int,
-    val cityId: Int,
+    val city_id: Int,
     val name: String,
     val description: String)

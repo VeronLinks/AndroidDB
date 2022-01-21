@@ -16,7 +16,7 @@ interface CityRepository {
 
     suspend fun getCityFilter(): Flow<CityFilter>
 
-    suspend fun getCityAndSights(cityId: Int): List<CityAndSights>
+    suspend fun getCityAndSights(cityId: Int): CityAndSights
 
     suspend fun addSight(sight: Sight)
 

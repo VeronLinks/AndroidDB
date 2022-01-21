@@ -19,6 +19,6 @@ interface CityDao {
     suspend fun insertSight(sightDbModel: SightDbModel)
 
     @Query("SELECT * FROM $TABLE_NAME WHERE id = :cityId")
-    fun getCityAndSights(cityId: Int): List<CityAndSightsDbModel>
+    suspend fun getCityAndSights(cityId: Int): CityAndSightsDbModel
 
 }
