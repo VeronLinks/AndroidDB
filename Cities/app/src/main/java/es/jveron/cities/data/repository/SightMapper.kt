@@ -1,6 +1,7 @@
 package es.jveron.cities.data.repository
 
 import es.jveron.cities.data.repository.api.SightApiModel
+import es.jveron.cities.data.repository.firebase.CitySightFirebaseModel
 import es.jveron.cities.data.repository.room.SightDbModel
 import es.jveron.cities.domain.model.Sight
 
@@ -20,6 +21,15 @@ object SightMapper {
             sightDbModel.city_id,
             sightDbModel.name,
             sightDbModel.description
+        )
+    }
+
+    fun mapSightFromFirebaseToDomain(citySightFirebaseModel: CitySightFirebaseModel): Sight {
+        return Sight(
+            citySightFirebaseModel.id,
+            citySightFirebaseModel.cityId,
+            citySightFirebaseModel.name,
+            citySightFirebaseModel.description
         )
     }
 

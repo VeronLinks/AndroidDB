@@ -17,7 +17,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import es.jveron.cities.data.repository.CityMapper
+import es.jveron.cities.data.repository.SightMapper
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 
 
 class CityFirebaseRepositoryImpl : CityRepository {
@@ -27,7 +29,6 @@ class CityFirebaseRepositoryImpl : CityRepository {
     val filters = database.getReference("filters")
 
     override suspend fun getCities(): Flow<List<City>> {
-        //return emptyFlow<List<City>>()
         return callbackFlow<List<City>> {
 
             cities.addValueEventListener(object : ValueEventListener {
@@ -49,7 +50,7 @@ class CityFirebaseRepositoryImpl : CityRepository {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    // Failed to read value
+                    close(error.toException())
                 }
             })
 
@@ -79,6 +80,7 @@ class CityFirebaseRepositoryImpl : CityRepository {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
+                    close(error.toException())
                 }
             })
 
@@ -87,7 +89,33 @@ class CityFirebaseRepositoryImpl : CityRepository {
     }
 
     override suspend fun getCityAndSights(cityId: Int): CityAndSights {
-        TODO()
+        val flow = callbackFlow<CityAndSights> {
+
+            cities.child(cityId.toString()).addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                    val cityFirebaseModel = dataSnapshot.getValue<CityFirebaseModel>()
+
+                    val sights = cityFirebaseModel?.sights?.map {
+                        SightMapper.mapSightFromFirebaseToDomain(it)
+                    } ?: arrayListOf()
+
+                    cityFirebaseModel?.let {
+                        val city = CityMapper.mapCityFromFirebaseToDomain(cityFirebaseModel)
+                        val cityDetails = CityAndSights(city, sights)
+                        trySend(cityDetails)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    close(error.toException())
+                }
+            })
+
+            awaitClose()
+        }
+
+        return flow.first()
     }
 
     override suspend fun addSight(sight: Sight) {

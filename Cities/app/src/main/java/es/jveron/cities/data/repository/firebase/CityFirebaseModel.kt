@@ -7,7 +7,7 @@ data class CityFirebaseModel(
     val name: String = "",
     val description: String = "",
     val sunshineHours: Int = 0,
-    val sights: List<SightApiModel> = emptyList()
+    val sights: List<CitySightFirebaseModel> = emptyList()
 ){
 
 }
